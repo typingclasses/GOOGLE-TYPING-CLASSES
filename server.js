@@ -17,6 +17,7 @@ app.get('/healthz', (req, res) => {
 });
 
 const SETTINGS_FILE = path.join(__dirname, 'settings.json');
+const DATA_FILE = path.join(__dirname, 'app_data.json');
 
 app.get('/api/settings', (req, res) => {
   try {
@@ -34,6 +35,28 @@ app.get('/api/settings', (req, res) => {
 app.post('/api/settings', (req, res) => {
   try {
     fs.writeFileSync(SETTINGS_FILE, JSON.stringify(req.body, null, 2), 'utf8');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/data', (req, res) => {
+  try {
+    if (fs.existsSync(DATA_FILE)) {
+      const data = fs.readFileSync(DATA_FILE, 'utf8');
+      res.json(JSON.parse(data));
+    } else {
+      res.json({});
+    }
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/data', (req, res) => {
+  try {
+    fs.writeFileSync(DATA_FILE, JSON.stringify(req.body, null, 2), 'utf8');
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

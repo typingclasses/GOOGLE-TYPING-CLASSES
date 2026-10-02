@@ -173,6 +173,29 @@ export default function App() {
     return INITIAL_SETTINGS;
   });
 
+  const syncAppData = (overrides = {}) => {
+    const fullData = {
+      courses,
+      students,
+      results,
+      certificates,
+      typingTests,
+      typingPassages,
+      wfhApps,
+      enquiries,
+      announcements,
+      media,
+      logs,
+      settings,
+      ...overrides
+    };
+    fetch('/api/data', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(fullData)
+    }).catch(() => {});
+  };
+
   useEffect(() => {
     const handleHashChange = () => {
       const hash = window.location.hash.replace('#', '') || '/';
@@ -185,14 +208,27 @@ export default function App() {
 
     window.addEventListener('hashchange', handleHashChange);
 
-    // Fetch server-synced settings
-    fetch('/api/settings')
+    // Fetch server-synced application data
+    fetch('/api/data')
       .then(res => res.json())
       .then(data => {
         if (data && Object.keys(data).length > 0) {
-          const merged = { ...INITIAL_SETTINGS, ...data };
-          setSettings(merged);
-          localStorage.setItem('gtc_settings', JSON.stringify(merged));
+          if (data.courses) { setCourses(data.courses); localStorage.setItem('gtc_courses', JSON.stringify(data.courses)); }
+          if (data.students) { setStudents(data.students); localStorage.setItem('gtc_students', JSON.stringify(data.students)); }
+          if (data.results) { setResults(data.results); localStorage.setItem('gtc_results', JSON.stringify(data.results)); }
+          if (data.certificates) { setCertificates(data.certificates); localStorage.setItem('gtc_certificates', JSON.stringify(data.certificates)); }
+          if (data.typingTests) { setTypingTests(data.typingTests); localStorage.setItem('gtc_typing_tests', JSON.stringify(data.typingTests)); }
+          if (data.typingPassages) { setTypingPassages(data.typingPassages); localStorage.setItem('gtc_typing_passages', JSON.stringify(data.typingPassages)); }
+          if (data.wfhApps) { setWfhApps(data.wfhApps); localStorage.setItem('gtc_wfh_apps', JSON.stringify(data.wfhApps)); }
+          if (data.enquiries) { setEnquiries(data.enquiries); localStorage.setItem('gtc_enquiries', JSON.stringify(data.enquiries)); }
+          if (data.announcements) { setAnnouncements(data.announcements); localStorage.setItem('gtc_announcements', JSON.stringify(data.announcements)); }
+          if (data.media) { setMedia(data.media); localStorage.setItem('gtc_media', JSON.stringify(data.media)); }
+          if (data.logs) { setLogs(data.logs); localStorage.setItem('gtc_logs', JSON.stringify(data.logs)); }
+          if (data.settings) {
+            const merged = { ...INITIAL_SETTINGS, ...data.settings };
+            setSettings(merged);
+            localStorage.setItem('gtc_settings', JSON.stringify(merged));
+          }
         }
       })
       .catch(() => {});
@@ -217,56 +253,67 @@ export default function App() {
     const updated = [newLog, ...logs];
     setLogs(updated);
     localStorage.setItem('gtc_logs', JSON.stringify(updated));
+    syncAppData({ logs: updated });
   };
 
   const handleUpdateCourses = (newC: any[]) => {
     setCourses(newC);
     localStorage.setItem('gtc_courses', JSON.stringify(newC));
+    syncAppData({ courses: newC });
   };
 
   const handleUpdateStudents = (newS: any[]) => {
     setStudents(newS);
     localStorage.setItem('gtc_students', JSON.stringify(newS));
+    syncAppData({ students: newS });
   };
 
   const handleUpdateResults = (newR: any[]) => {
     setResults(newR);
     localStorage.setItem('gtc_results', JSON.stringify(newR));
+    syncAppData({ results: newR });
   };
 
   const handleUpdateCertificates = (newC: any[]) => {
     setCertificates(newC);
     localStorage.setItem('gtc_certificates', JSON.stringify(newC));
+    syncAppData({ certificates: newC });
   };
 
   const handleUpdateTypingTests = (newT: any[]) => {
     setTypingTests(newT);
     localStorage.setItem('gtc_typing_tests', JSON.stringify(newT));
+    syncAppData({ typingTests: newT });
   };
 
   const handleUpdateTypingPassages = (newP: TypingPassage[]) => {
     setTypingPassages(newP);
     localStorage.setItem('gtc_typing_passages', JSON.stringify(newP));
+    syncAppData({ typingPassages: newP });
   };
 
   const handleUpdateWfhApps = (newW: any[]) => {
     setWfhApps(newW);
     localStorage.setItem('gtc_wfh_apps', JSON.stringify(newW));
+    syncAppData({ wfhApps: newW });
   };
 
   const handleUpdateEnquiries = (newE: any[]) => {
     setEnquiries(newE);
     localStorage.setItem('gtc_enquiries', JSON.stringify(newE));
+    syncAppData({ enquiries: newE });
   };
 
   const handleUpdateAnnouncements = (newA: any[]) => {
     setAnnouncements(newA);
     localStorage.setItem('gtc_announcements', JSON.stringify(newA));
+    syncAppData({ announcements: newA });
   };
 
   const handleUpdateMedia = (newM: any[]) => {
     setMedia(newM);
     localStorage.setItem('gtc_media', JSON.stringify(newM));
+    syncAppData({ media: newM });
   };
 
   const handleUpdateSettings = (newSt: any) => {
@@ -277,6 +324,7 @@ export default function App() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(newSt)
     }).catch(() => {});
+    syncAppData({ settings: newSt });
   };
 
   // Check if current path is an admin route
