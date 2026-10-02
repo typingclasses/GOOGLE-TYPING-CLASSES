@@ -309,7 +309,7 @@ export const INITIAL_SETTINGS: InstituteSettings = {
   metaDescription: 'Best Computer & Typing Classes in Patna. Learn English & Hindi Typing, Shorthand, DCA, ADCA, Tally, SSC CHSL Typing Preparation.',
   keywords: 'Typing Classes in Patna, Computer Classes in Patna, DCA Course, ADCA, Tally, Shorthand',
   footerText: '© 2026 Google Typing Classes. All Rights Reserved.',
-  logoUrl: 'https://images.unsplash.com/photo-1544717305-2782549b5136?w=200&auto=format&fit=crop&q=80',
+  logoUrl: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%232563eb'/%3E%3Cstop offset='100%25' stop-color='%23f97316'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='28' fill='url(%23grad)'/%3E%3Cpath d='M25 40h50v20H25z' fill='none' stroke='%23ffffff' stroke-width='6' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='35' cy='50' r='3' fill='%23ffffff'/%3E%3Ccircle cx='50' cy='50' r='3' fill='%23ffffff'/%3E%3Ccircle cx='65' cy='50' r='3' fill='%23ffffff'/%3E%3C/svg%3E",
   facebookUrl: 'https://facebook.com/googletypingclassespatna',
   youtubeUrl: 'https://youtube.com/@googletypingclassespatna',
   instagramUrl: 'https://instagram.com/googletypingclasses',

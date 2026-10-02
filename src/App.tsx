@@ -54,14 +54,35 @@ import { TypingPassage } from './types';
 export default function App() {
   const [currentPath, setCurrentPath] = useState<string>('/');
   const [user, setUser] = useState<any>(() => {
-    const saved = localStorage.getItem('gtc_student_user');
+    const saved = localStorage.getItem('gtc_student_user') || sessionStorage.getItem('gtc_student_user');
     return saved ? JSON.parse(saved) : null;
   });
 
   const [adminUser, setAdminUser] = useState<any>(() => {
-    const saved = localStorage.getItem('gtc_admin_user');
-    return saved ? JSON.parse(saved) : null;
+    const saved = localStorage.getItem('gtc_admin_user') || sessionStorage.getItem('gtc_admin_user');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        return parsed;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
   });
+
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'gtc_admin_user') {
+        setAdminUser(e.newValue ? JSON.parse(e.newValue) : null);
+      }
+      if (e.key === 'gtc_student_user') {
+        setUser(e.newValue ? JSON.parse(e.newValue) : null);
+      }
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   // Persistent website data synced between Admin and Public
   const [courses, setCourses] = useState(() => {
@@ -139,8 +160,11 @@ export default function App() {
         const parsed = JSON.parse(saved);
         if (!parsed.email || parsed.email === 'support@googletypingclasses.com') {
           parsed.email = 'maasitaniwas@gmail.com';
-          localStorage.setItem('gtc_settings', JSON.stringify({ ...INITIAL_SETTINGS, ...parsed }));
         }
+        if (!parsed.logoUrl || parsed.logoUrl.includes('images.unsplash.com')) {
+          parsed.logoUrl = INITIAL_SETTINGS.logoUrl;
+        }
+        localStorage.setItem('gtc_settings', JSON.stringify({ ...INITIAL_SETTINGS, ...parsed }));
         return { ...INITIAL_SETTINGS, ...parsed };
       } catch (e) {
         return INITIAL_SETTINGS;
@@ -160,6 +184,19 @@ export default function App() {
     }
 
     window.addEventListener('hashchange', handleHashChange);
+
+    // Fetch server-synced settings
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data && Object.keys(data).length > 0) {
+          const merged = { ...INITIAL_SETTINGS, ...data };
+          setSettings(merged);
+          localStorage.setItem('gtc_settings', JSON.stringify(merged));
+        }
+      })
+      .catch(() => {});
+
     return () => window.removeEventListener('hashchange', handleHashChange);
   }, []);
 
@@ -235,6 +272,11 @@ export default function App() {
   const handleUpdateSettings = (newSt: any) => {
     setSettings(newSt);
     localStorage.setItem('gtc_settings', JSON.stringify(newSt));
+    fetch('/api/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newSt)
+    }).catch(() => {});
   };
 
   // Check if current path is an admin route
@@ -246,8 +288,10 @@ export default function App() {
         <AdminLogin 
           onNavigate={handleNavigate} 
           onAdminLogin={(adm) => {
-            setAdminUser(adm);
-            localStorage.setItem('gtc_admin_user', JSON.stringify(adm));
+            const sessionData = { ...adm, token: 'gtc_admin_token_' + Date.now() };
+            setAdminUser(sessionData);
+            localStorage.setItem('gtc_admin_user', JSON.stringify(sessionData));
+            sessionStorage.setItem('gtc_admin_user', JSON.stringify(sessionData));
             logAction('Admin Login', 'Successfully logged into admin portal.');
           }} 
         />
@@ -261,8 +305,10 @@ export default function App() {
         <AdminLogin 
           onNavigate={handleNavigate} 
           onAdminLogin={(adm) => {
-            setAdminUser(adm);
-            localStorage.setItem('gtc_admin_user', JSON.stringify(adm));
+            const sessionData = { ...adm, token: 'gtc_admin_token_' + Date.now() };
+            setAdminUser(sessionData);
+            localStorage.setItem('gtc_admin_user', JSON.stringify(sessionData));
+            sessionStorage.setItem('gtc_admin_user', JSON.stringify(sessionData));
             logAction('Admin Login', 'Successfully logged into admin portal.');
           }} 
         />

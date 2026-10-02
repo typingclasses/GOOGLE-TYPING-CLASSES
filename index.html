@@ -1,6 +1,18 @@
 <!doctype html>
 <html lang="en" class="scroll-smooth">
   <head>
+    <script>
+      try {
+        const originalFetch = window.fetch;
+        let customFetch = originalFetch;
+        Object.defineProperty(window, 'fetch', {
+          get: function() { return customFetch; },
+          set: function(val) { customFetch = val; },
+          configurable: true,
+          enumerable: true
+        });
+      } catch (e) {}
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Google Typing Classes Patna | Best Computer & Typing Institute</title>
@@ -18,4 +30,3 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

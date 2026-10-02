@@ -7,20 +7,41 @@ interface AdminLoginProps {
 }
 
 export const AdminLogin: React.FC<AdminLoginProps> = ({ onNavigate, onAdminLogin }) => {
-  const savedSettings = localStorage.getItem('gtc_settings');
-  let validAdminEmail = 'admin@googletypingclasses.com';
-  let validAdminPassword = 'admin123';
-  if (savedSettings) {
-    try {
-      const parsed = JSON.parse(savedSettings);
-      if (parsed.adminEmail) validAdminEmail = parsed.adminEmail;
-      if (parsed.adminPassword) validAdminPassword = parsed.adminPassword;
-    } catch (e) {}
-  }
-
-  const [email, setEmail] = useState(validAdminEmail);
-  const [password, setPassword] = useState('');
+  const [validAdminEmail, setValidAdminEmail] = useState('admin@googletypingclasses.com');
+  const [validAdminPassword, setValidAdminPassword] = useState('admin123');
+  const [email, setEmail] = useState('admin@googletypingclasses.com');
+  const [password, setPassword] = useState('admin123');
   const [error, setError] = useState('');
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem('gtc_settings');
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed.adminEmail) {
+          setValidAdminEmail(parsed.adminEmail);
+          setEmail(parsed.adminEmail);
+        }
+        if (parsed.adminPassword) {
+          setValidAdminPassword(parsed.adminPassword);
+          setPassword(parsed.adminPassword);
+        }
+      } catch (e) {}
+    }
+    fetch('/api/settings')
+      .then(res => res.json())
+      .then(data => {
+        if (data && data.adminEmail) {
+          setValidAdminEmail(data.adminEmail);
+          setEmail(data.adminEmail);
+        }
+        if (data && data.adminPassword) {
+          setValidAdminPassword(data.adminPassword);
+          setPassword(data.adminPassword);
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();

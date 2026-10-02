@@ -79,10 +79,18 @@ export const Navbar: React.FC<NavbarProps> = ({ currentPath, onNavigate, user, o
         >
           <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-blue-600 to-indigo-700 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform overflow-hidden border border-blue-500/30">
             {settings?.logoUrl ? (
-              <img src={settings.logoUrl} alt="Logo" className="w-full h-full object-cover" />
-            ) : (
-              <Keyboard className="w-6 h-6" />
-            )}
+              <img 
+                src={settings.logoUrl} 
+                alt="Logo" 
+                className="w-full h-full object-cover" 
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                }}
+              />
+            ) : null}
+            <div className={`absolute ${settings?.logoUrl ? 'opacity-0 hover:opacity-100' : 'opacity-100'}`}>
+              <Keyboard className="w-6 h-6 text-white" />
+            </div>
           </div>
           <div>
             <h1 className="text-lg sm:text-xl font-extrabold text-slate-900 tracking-tight leading-none group-hover:text-blue-600 transition-colors">
